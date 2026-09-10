@@ -3,8 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Simbolos de transicao e seus respectivos indices nas matrizes
+#define letra 0
+#define digito 1
+#define outro 2
+
 char nextChar(FILE *file) {
     return fgetc(file);
+}
+
+bool letra(char c) {
+    if (c >= 65 && c <= 90 || c >= 97 && c <= 122) return true;
+}
+
+bool digito(char c) {
+    if (c >= 48 && c <= 57) return true;
 }
 
 int main() {
@@ -27,9 +40,10 @@ int main() {
     }
 
     // 2. Inicializar matrizes do AFD
+    // Estados: (0, 1, 2)
+    // Transicoes: letra (0) | digito (1) | outro (2)
 
     // Matriz de transição de estados
-    // Estados | letra | digito | outro
     int T[3][3] = {
         {1, -1, -1},
         {1, 1, 2},
