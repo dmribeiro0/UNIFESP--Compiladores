@@ -26,16 +26,25 @@ int main() {
         return 1;
     }
 
-    // 2. Inicializar matrizes da tabela do algoritmo
+    // 2. Inicializar matrizes do AFD
 
     // Matriz de transição de estados
-    int T[3][3];
+    // Estados | letra | digito | outro
+    int T[3][3] = {
+        {1, -1, -1},
+        {1, 1, 2},
+        {-1, -1, -1}
+    };
 
     // Matriz avance
-    int A[3][3];
+    bool A[3][3] = {
+        {true, false, false},
+        {true, true, false},
+        {false, false, false}
+    };
 
     // Matriz de aceitação
-    int F[3];
+    bool F[3] = {false, false, true};
 
     // 3. Inicializar variáveis de controle
 
