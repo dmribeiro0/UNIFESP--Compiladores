@@ -119,6 +119,8 @@ int main() {
 
     c = nextChar(input_fptr); // Primeiro caractere do arquivo
 
+    // 4. Aplicar o algoritmo ao arquivo
+    
     // Identifica tokens de identificadores
     // Substitui os lexemas de identificadores por "ID" no arquivo de saída
     while (c != EOF) {
@@ -145,9 +147,9 @@ int main() {
         }
         else if (F[nextState]) {
             // Estado Final: String pertence a linguagem, nesse caso:
-            // 1. Escreva ID no lugar dela no arq de saida
-            // 2. Retorne para o estado inicial
-            // Tratamento de palavras reservadas
+            // 1. Cheque para palavras reservadas
+            // 2. Escreva ID no lugar dela no arq de saida
+            // 3. Retorne para o estado inicial
             buffer[idx] = '\0';
             if (isPalavraReservada(buffer)) {
                 copyToOutput(output_fptr, buffer);
