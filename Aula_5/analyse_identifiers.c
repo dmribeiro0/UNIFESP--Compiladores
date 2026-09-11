@@ -164,7 +164,12 @@ int main() {
     // Se o arquivo terminar no meio de um identificador (estado 1),
     // trate isso como aceitacao, ja que o EOF funciona como delimitador implicito
     if (currentState == 1) {
-        writeIDtoOutput(output_fptr);
+        buffer[idx] = '\0';
+        if (isPalavraReservada(buffer)) {
+            copyToOutput(output_fptr, buffer);
+        } else {
+            writeIDtoOutput(output_fptr);
+        }
     }
 
     fclose(input_fptr);
