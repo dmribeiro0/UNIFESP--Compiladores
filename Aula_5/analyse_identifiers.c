@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define MAX_BUFFER_SIZE 1000
 
@@ -13,6 +14,27 @@
 
 int nextChar(FILE *file) {
     return fgetc(file);
+}
+
+bool isPalavraReservada(char *string) {
+    // Lista de palavras reservadas da linguagem C
+    const char *palavrasReservadas[] = {
+        "auto", "break", "case", "char", "const", "continue",
+        "default", "do", "double", "else", "enum", "extern",
+        "float", "for", "goto", "if", "int", "long",
+        "register", "return", "short", "signed", "sizeof", "static",
+        "struct", "switch", "typedef", "union", "unsigned", "void",
+        "volatile", "while"
+    };
+    int quantidade = sizeof(palavrasReservadas) / sizeof(palavrasReservadas[0]);
+
+    for (int i = 0; i < quantidade; i++) {
+        if (strcmp(string, palavrasReservadas[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool isLetra(char c) {
@@ -100,18 +122,18 @@ int main() {
     // Identifica tokens de identificadores
     // Substitui os lexemas de identificadores por "ID" no arquivo de saída
     while (c != EOF) {
-        // Passo 1. Atualizar o buffer
-        buffer[idx++] = c;
-
-        // Passo 2. Processar caractere e calcular proximo estado
+        // Passo 1. Processar caractere e calcular proximo estado
         charSymbol = getCharSymbol(c);              // Define o simbolo de transicao (letra, digito ou outro)
         nextState = T[currentState][charSymbol];    // Calcula proximo estado a partir de 'currentState' e consumindo 'charSymbol'
         consumeNext = A[currentState][charSymbol];  // Diz se o algoritmo deve ou nao consumir o proximo caractere
         
-        // Passo 3. Consumir proximo caractere ou nao
-        if (consumeNext) c = nextChar(input_fptr);
+        // Passo 2. Consumir proximo caractere (e adiciona-lo ao buffer) ou nao
+        if (consumeNext) {
+            buffer[idx++] = c;
+            c = nextChar(input_fptr);
 
-        // Passo 4. Processar proximo estado
+        }
+        // Passo 3. Processar proximo estado
         if (nextState == -1) {
             // Nao ha transicao (string nao pertence a linguagem), nesse caso:
             // 1. Escreva o conteudo sem alteracao no arq de saida 
@@ -125,7 +147,13 @@ int main() {
             // Estado Final: String pertence a linguagem, nesse caso:
             // 1. Escreva ID no lugar dela no arq de saida
             // 2. Retorne para o estado inicial
-            writeIDtoOutput(output_fptr);
+            // Tratamento de palavras reservadas
+            buffer[idx] = '\0';
+            if (isPalavraReservada(buffer)) {
+                copyToOutput(output_fptr, buffer);
+            } else {
+                writeIDtoOutput(output_fptr);
+            }
             nextState = 0;
             idx = 0;
         }
