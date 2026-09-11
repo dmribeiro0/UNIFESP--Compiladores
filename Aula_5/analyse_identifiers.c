@@ -188,7 +188,7 @@ int main() {
     // trate isso como aceitacao, ja que o EOF funciona como delimitador implicito
     if (currentState == 1) {
         buffer[idx] = '\0';
-        if (isPalavraReservada(buffer)) {
+        if (isPalavraReservada(buffer) || isLineComment || isBlockComment) {
             copyToOutput(output_fptr, buffer);
         } else {
             writeIDtoOutput(output_fptr);
