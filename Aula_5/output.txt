@@ -1,5 +1,5 @@
-/* ID ID IDçãID ID IDçãID ID 
-   ID ID ID ID ID. */
+/* programa para ordenação por seleção de 
+   uma matriz com dez elementos. */
 
 int ID[ 10 ];
 

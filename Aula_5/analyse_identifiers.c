@@ -110,17 +110,19 @@ int main() {
 
     // 3. Inicializar variáveis de controle
 
-    int c;
+    int c, prev_c;
     int currentState = 0, nextState;
-    bool consumeNext;
+    bool consumeNext; 
+    bool isLineComment = false, isBlockComment = false;
     int charSymbol;
     char buffer[MAX_BUFFER_SIZE];
     int idx = 0;
 
+
     c = nextChar(input_fptr); // Primeiro caractere do arquivo
 
     // 4. Aplicar o algoritmo ao arquivo
-    
+
     // Identifica tokens de identificadores
     // Substitui os lexemas de identificadores por "ID" no arquivo de saída
     while (c != EOF) {
@@ -128,14 +130,33 @@ int main() {
         charSymbol = getCharSymbol(c);              // Define o simbolo de transicao (letra, digito ou outro)
         nextState = T[currentState][charSymbol];    // Calcula proximo estado a partir de 'currentState' e consumindo 'charSymbol'
         consumeNext = A[currentState][charSymbol];  // Diz se o algoritmo deve ou nao consumir o proximo caractere
-        
-        // Passo 2. Consumir proximo caractere (e adiciona-lo ao buffer) ou nao
+
+        // Passo 2 e 3: 
+        // Alimentar o buffer e consumir proximo caractere (ou nao)
+        // Tratar comentario  ('/' == 47, '*' == 42, '\n' == 10)
         if (consumeNext) {
             buffer[idx++] = c;
+            prev_c = c;
             c = nextChar(input_fptr);
 
+            // Tratamento de comentario
+            if (!isLineComment && !isBlockComment){
+                if (prev_c == 47 && c == 47) {
+                    isLineComment = true;
+                } 
+                else if (prev_c == 47 && c == 42) {
+                    isBlockComment = true;
+                }
+            }
+            else if (isLineComment) {
+                if (prev_c == 10) isLineComment = false;
+            }
+            else if (isBlockComment) {
+                if (prev_c == 42 && c == 47) isBlockComment = false;
+            }
         }
-        // Passo 3. Processar proximo estado
+
+        // Passo 4. Processar proximo estado
         if (nextState == -1) {
             // Nao ha transicao (string nao pertence a linguagem), nesse caso:
             // 1. Escreva o conteudo sem alteracao no arq de saida 
@@ -151,7 +172,7 @@ int main() {
             // 2. Escreva ID no lugar dela no arq de saida
             // 3. Retorne para o estado inicial
             buffer[idx] = '\0';
-            if (isPalavraReservada(buffer)) {
+            if (isPalavraReservada(buffer) || isLineComment || isBlockComment) {
                 copyToOutput(output_fptr, buffer);
             } else {
                 writeIDtoOutput(output_fptr);
