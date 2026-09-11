@@ -2,34 +2,47 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_BUFFER_SIZE 1000
 
 // Simbolos de transicao e seus respectivos indices nas matrizes
 #define letra 0
 #define digito 1
 #define outro 2
 
-char nextChar(FILE *file) {
+int nextChar(FILE *file) {
     return fgetc(file);
 }
 
-bool letra(char c) {
+bool isLetra(char c) {
     if (c >= 65 && c <= 90 || c >= 97 && c <= 122) return true;
+    return false;
 }
 
-bool digito(char c) {
+bool isDigito(char c) {
     if (c >= 48 && c <= 57) return true;
+    return false;
 }
 
 int getCharSymbol(char c) {
-    if (letra(c)) {
+    if (isLetra(c)) {
         return letra;
     }
-    else if (digito(c)) {
+    else if (isDigito(c)) {
         return digito;
     }
     else {
         return outro;
     }
+}
+
+void copyToOutput(FILE *file, char *string) {
+    fputs(string, file);
+}
+
+void writeIDtoOutput(FILE *file) {
+    fputs("ID", file);
 }
 
 int main() {
@@ -65,9 +78,9 @@ int main() {
 
     // Matriz avance
     bool A[3][3] = {
-        {true, false, false},
+        {true, true, true},
         {true, true, false},
-        {false, false, false}
+        {true, true, true}
     };
 
     // Matriz de aceitação
@@ -75,37 +88,59 @@ int main() {
 
     // 3. Inicializar variáveis de controle
 
-    char c;
+    int c;
     int currentState = 0, nextState;
+    bool consumeNext;
     int charSymbol;
-    FILE *start, *end;
+    char buffer[MAX_BUFFER_SIZE];
+    int idx = 0;
 
     c = nextChar(input_fptr); // Primeiro caractere do arquivo
 
     // Identifica tokens de identificadores
     // Substitui os lexemas de identificadores por "ID" no arquivo de saída
     while (c != EOF) {
-        // Passo 1. Consumir caractere e calcular proximo estado 
-        charSymbol = getCharSymbol(c) // Define o simbolo de transicao (letra, digito ou outro)
-        nextState = T[currentState][charSymbol]; // Calcula proximo estado a partir de 'currentState' e consumindo 'charSymbol'
-        switch(nextState) {
-            case -1:
-                // Estado -1: Nao ha transicao em 'state' ao consumir 'charSymbol'
-                // String nao eh um identificador, voltar para Estado 0
-                nextState = 0;
-                break;
-            case 0:
-                // Estado 0: Primeiro caractere de possivel ID
-                // Salvar ponteiro para esse caractere
-                start = input_fptr;
-                break;
-            case 1:
-                // Estado 1: Analisando possivel ID
-                break;
-            case 2:
-                // Estado 2: ID encontrado
-                // Nesse momento input_fptr aponta para 
-                break;
+        // Passo 1. Atualizar o buffer
+        buffer[idx++] = c;
+
+        // Passo 2. Processar caractere e calcular proximo estado
+        charSymbol = getCharSymbol(c);              // Define o simbolo de transicao (letra, digito ou outro)
+        nextState = T[currentState][charSymbol];    // Calcula proximo estado a partir de 'currentState' e consumindo 'charSymbol'
+        consumeNext = A[currentState][charSymbol];  // Diz se o algoritmo deve ou nao consumir o proximo caractere
+        
+        // Passo 3. Consumir proximo caractere ou nao
+        if (consumeNext) c = nextChar(input_fptr);
+
+        // Passo 4. Processar proximo estado
+        if (nextState == -1) {
+            // Nao ha transicao (string nao pertence a linguagem), nesse caso:
+            // 1. Escreva o conteudo sem alteracao no arq de saida 
+            // 2. Volte para o estado inicial
+            buffer[idx] = '\0';
+            copyToOutpout(output_fptr, buffer);
+            nextState = 0;
+            idx = 0;
         }
+        else if (F[nextState]) {
+            // Estado Final: String pertence a linguagem, nesse caso:
+            // 1. Escreva ID no lugar dela no arq de saida
+            // 2. Retorne para o estado inicial
+            writeIDtoOutput(output_fptr);
+            nextState = 0;
+            idx = 0;
+        }
+
+        currentState = nextState;
     }
+
+    // Se o arquivo terminar no meio de um identificador (estado 1),
+    // trate isso como aceitacao, ja que o EOF funciona como delimitador implicito
+    if (currentState == 1) {
+        writeIDtoOutput(output_fptr);
+    }
+
+    fclose(input_fptr);
+    fclose(output_fptr);
+
+    return 0;
 }
