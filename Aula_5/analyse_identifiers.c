@@ -117,7 +117,7 @@ int main() {
             // 1. Escreva o conteudo sem alteracao no arq de saida 
             // 2. Volte para o estado inicial
             buffer[idx] = '\0';
-            copyToOutpout(output_fptr, buffer);
+            copyToOutput(output_fptr, buffer);
             nextState = 0;
             idx = 0;
         }
