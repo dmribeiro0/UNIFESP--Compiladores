@@ -20,6 +20,18 @@ bool digito(char c) {
     if (c >= 48 && c <= 57) return true;
 }
 
+int getCharSymbol(char c) {
+    if (letra(c)) {
+        return letra;
+    }
+    else if (digito(c)) {
+        return digito;
+    }
+    else {
+        return outro;
+    }
+}
+
 int main() {
     // 1. Abrir arquivo de entrada e saída
     FILE *input_fptr, *output_fptr;
@@ -44,6 +56,7 @@ int main() {
     // Transicoes: letra (0) | digito (1) | outro (2)
 
     // Matriz de transição de estados
+    // -1 representa ausencia de transicao
     int T[3][3] = {
         {1, -1, -1},
         {1, 1, 2},
@@ -63,9 +76,36 @@ int main() {
     // 3. Inicializar variáveis de controle
 
     char c;
+    int currentState = 0, nextState;
+    int charSymbol;
+    FILE *start, *end;
 
-    while (c = nextChar(input_fptr) != EOF) {
-        // Identifica tokens de identificadores
-        // Substitui os lexemas de identificadores por "ID" no arquivo de saída
+    c = nextChar(input_fptr); // Primeiro caractere do arquivo
+
+    // Identifica tokens de identificadores
+    // Substitui os lexemas de identificadores por "ID" no arquivo de saída
+    while (c != EOF) {
+        // Passo 1. Consumir caractere e calcular proximo estado 
+        charSymbol = getCharSymbol(c) // Define o simbolo de transicao (letra, digito ou outro)
+        nextState = T[currentState][charSymbol]; // Calcula proximo estado a partir de 'currentState' e consumindo 'charSymbol'
+        switch(nextState) {
+            case -1:
+                // Estado -1: Nao ha transicao em 'state' ao consumir 'charSymbol'
+                // String nao eh um identificador, voltar para Estado 0
+                nextState = 0;
+                break;
+            case 0:
+                // Estado 0: Primeiro caractere de possivel ID
+                // Salvar ponteiro para esse caractere
+                start = input_fptr;
+                break;
+            case 1:
+                // Estado 1: Analisando possivel ID
+                break;
+            case 2:
+                // Estado 2: ID encontrado
+                // Nesse momento input_fptr aponta para 
+                break;
+        }
     }
 }
