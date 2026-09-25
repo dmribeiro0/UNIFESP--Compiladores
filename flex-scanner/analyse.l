@@ -68,20 +68,26 @@ while				{return WHILE;}
 "]"					{return RBRACK;}
 "{"					{return LBRACE;}
 "}"					{return RBRACE;}
-"/*"    {
-            int c;
-            while ((c = input()) != 0) { //Input != EOF
-                if (c == '\n') {
-                    line_count++;
-                } else if (c == '*') {
-                    if ((c = input()) == '/') {
-                        break; // Encontrou "*/" -> Sai do loop e finaliza o comentário
-                    }
-                    if (c == 0) break; 
-                    if (c == '\n') line_count++;
-                }
-            }
-        }
+"/*"    			{
+
+			            int c;
+			           	for ( ; ; ) {
+			           		while ( (c = input()) != '*' && c != 0 ) {	// Consome o comentario
+			           			if (c == '\n') line_count++;
+			           		}
+			           		if (c == '*') {
+			           			while((c = input()) == '*') {			// Consome multiplos '*'
+			           				if (c == '\n') line_count++;
+			           			}
+			           			if (c == '/') break;					// Fim do comentario
+			           		}
+			           		if (c == 0) {
+			           			printf("Erro: EOF encontrado dentro do comentario\n");
+			           			break;
+			           		}
+
+			           	}
+			        }
 "*/"				{return RCOMM;}
 [ ]					{ }
 \t					{ }
