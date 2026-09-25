@@ -31,6 +31,8 @@
 	#define NEWLINE	329
 	#define END 	330
 	#define ERR 	331
+
+	int line_count = 1;
 %}
 
 LETRA	[a-zA-Z]
@@ -73,7 +75,7 @@ while				{return WHILE;}
                     line_count++;
                 } else if (c == '*') {
                     if ((c = input()) == '/') {
-                        break; /* Encontrou "*/" -> Sai do loop e finaliza o comentário */
+                        break; // Encontrou "*/" -> Sai do loop e finaliza o comentário
                     }
                     if (c == 0) break; 
                     if (c == '\n') line_count++;
@@ -91,7 +93,7 @@ while				{return WHILE;}
 
 int main(int argc, char **argv) {
 	FILE *input_fptr;
-	int line_count = 1, token;
+	int token;
 
 	// Carregar arquivo de entrada
 	if (argc == 2) {
