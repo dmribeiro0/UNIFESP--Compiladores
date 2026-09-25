@@ -66,7 +66,20 @@ while				{return WHILE;}
 "]"					{return RBRACK;}
 "{"					{return LBRACE;}
 "}"					{return RBRACE;}
-"/*"				{return LCOMM;}
+"/*"    {
+            int c;
+            while ((c = input()) != 0) { //Input != EOF
+                if (c == '\n') {
+                    line_count++;
+                } else if (c == '*') {
+                    if ((c = input()) == '/') {
+                        break; /* Encontrou "*/" -> Sai do loop e finaliza o comentário */
+                    }
+                    if (c == 0) break; 
+                    if (c == '\n') line_count++;
+                }
+            }
+        }
 "*/"				{return RCOMM;}
 [ ]					{ }
 \t					{ }
@@ -89,7 +102,7 @@ int main(int argc, char **argv) {
 	// Analisar arquivo
 
 	while ((token = yylex()) != END) {
-		switch (token)  {
+		switch (token)  {	
 			case NEWLINE:
 				line_count++;
 				break;
