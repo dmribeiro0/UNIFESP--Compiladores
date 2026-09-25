@@ -69,16 +69,14 @@ while				{return WHILE;}
 "{"					{return LBRACE;}
 "}"					{return RBRACE;}
 "/*"    			{
-
 			            int c;
 			           	for ( ; ; ) {
 			           		while ( (c = input()) != '*' && c != 0 ) {	// Consome o comentario
 			           			if (c == '\n') line_count++;
 			           		}
 			           		if (c == '*') {
-			           			while((c = input()) == '*') {			// Consome multiplos '*'
-			           				if (c == '\n') line_count++;
-			           			}
+			           			while((c = input()) == '*');			// Consome multiplos '*'
+			           			if (c == '\n') line_count++;
 			           			if (c == '/') break;					// Fim do comentario
 			           		}
 			           		if (c == 0) {
