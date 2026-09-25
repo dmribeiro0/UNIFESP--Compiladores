@@ -89,6 +89,7 @@ while				{return WHILE;}
 "*/"				{return RCOMM;}
 [ ]					{ }
 \t					{ }
+\r 					{ }
 \n 					{return NEWLINE;}
 <<EOF>>				{printf("END"); return END;}
 {OUTRO}				{return ERR;}
