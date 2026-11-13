@@ -57,6 +57,6 @@ while				{return WHILE;}
 \r 					{ }
 \n 					{ linecount++; }
 <<EOF>>				{ return 0; }
-.   				{printf("Erro Lexico: '%s' %d\n", yytext, linecount);}
+.   				{ printf("Erro Lexico: '%s' %d\n", yytext, linecount); }
 
 %%

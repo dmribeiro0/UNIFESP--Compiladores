@@ -15,15 +15,18 @@ programa    	   : declaracao_lista { };
 declaracao_lista   : declaracao_lista declaracao { }
 		   	   	   | declaracao { };
 declaracao	       : var_declaracao { }
-		           | fun_declaracao { };
+		           | fun_declaracao { }
+				   | error SEMI { yyerrok; };
 id	               : ID { }; 
 fid		           : {  }; 
-var_declaracao	   : tipo_especificador var SEMI { };
+var_declaracao	   : tipo_especificador var SEMI { }
+				   | tipo_especificador var error { };
 tipo_especificador : INT { } 
 		           | VOID { };
 fun_declaracao	   : tipo_especificador id fid APAR params FPAR composto_decl { };
 params		       : param_lista { }
-		           | VOID { };
+		           | VOID { }
+				   | error { };
 param_lista	       : param_lista VIR param { }
 		           | param { };
 param		       : tipo_especificador id { }
@@ -37,16 +40,18 @@ statement	       : expressao_decl { }
 		           | composto_decl { }
 		           | selecao_decl { }
 		           | iteracao_decl { }
-		           | retorno_decl { };
+		           | retorno_decl { }
+				   | error SEMI { yyerrok; };
 expressao_decl	   : expressao SEMI { }
 		           | SEMI { };
 selecao_decl	   : IF APAR expressao FPAR statement { }
 		           | IF APAR expressao FPAR statement ELSE statement	{ };
-iteracao_decl	   : WHILE APAR expressao FPAR statement{ };
+iteracao_decl	   : WHILE APAR expressao FPAR statement { };
 retorno_decl	   : RETURN SEMI { }
 		           | RETURN expressao SEMI	{ };
 expressao	       : var ASSIGN expressao { }
-		           | simples_expressao { };
+		           | simples_expressao { }
+				   | error { };
 var		           : id { }
 		           | id ACOL expressao FCOL{ };
 var2		       : id { };
